@@ -19,13 +19,15 @@ class HotLabelView: UIView {
     
     let kMargin:        CGFloat         = 10    //上下左右边距
     
-    var totalWidth:     CGFloat         = 0     //总宽度（用来判断是否需要折行）,默认为边距10
+    var totalWidth:     CGFloat         = 0     //总宽度（用来判断是否需要折行）
     
     var realWidth:      CGFloat         = 0     //真实宽度，记录的宽度
     
+    var realHeight:     CGFloat         = 0     //真实高度，记录的高度
+    
     var numberOfRow:    CGFloat         = 0     //当前行数，默认为0，即第一行
     
-    var count:          CGFloat         = 0     //同行的btn的数量，默认为0，即第一个
+    var numberOfLine:   CGFloat         = 0     //当前列数，默认为0，即第一列
 
     var btnTag:         NSInteger       = 0     //btn的tag，用来建立对应的点击事件
 
@@ -59,29 +61,47 @@ class HotLabelView: UIView {
                 continue
                 
             }
-            
-            //判断是否需要折行，条件为totalWidth是否大于屏幕宽度(加左边距)
-            if totalWidth + kMargin > frame.size.width {//当总宽度大于屏幕宽度时
-                
+//方法二
+
+            if totalWidth + kMargin > frame.size.width {
+                numberOfLine = 0
+                numberOfRow += 1
+                realWidth = 0
                 totalWidth = stringSize.width
-                
-                realWidth = stringSize.width
-                
-                numberOfRow += 1//增加当前行数，以便加高度和Kmargin
-                
-                count = 1   //默认为0，重置为1，eg：第二行，折行之后，则为第二行第二个，则需要加kMargin来实现统一边距
-                
-                btn.frame = CGRect(x: kMargin , y: kMargin + (numberOfRow * (20 + kMargin)), width: stringSize.width, height: 20)
-                
-            }else {//当总宽度不大于屏幕宽度时
-                
-                btn.frame = CGRect(x: realWidth + kMargin + count * kMargin, y: kMargin + (numberOfRow * (20 + kMargin)), width: stringSize.width, height: 20)
-                
-                realWidth += stringSize.width
-                
-                count += 1 //当没有换行时，记录同行btn的个数，以便加kMargin
-                
+                realHeight += stringSize.height
             }
+            
+            
+            btn.frame = CGRect(x: kMargin * (numberOfLine + 1) +  realWidth , y: kMargin * (numberOfRow + 1) + (numberOfRow == 0 ? 0 : realHeight), width: stringSize.width, height: stringSize.height)
+            
+            
+            numberOfLine += 1
+            
+            realWidth += stringSize.width
+            
+//方法一、
+//            //判断是否需要折行，条件为totalWidth是否大于屏幕宽度(加左边距)
+//            if totalWidth + kMargin > frame.size.width {//当总宽度大于屏幕宽度时
+//                
+//                totalWidth = stringSize.width
+//                
+//                realWidth = stringSize.width
+//                
+//                numberOfRow += 1//增加当前行数，以便加高度和Kmargin
+//                
+//                numberOfLine = 1   //默认为0，重置为1，eg：第二行，折行之后，则为第二行第二个，则需要加kMargin来实现统一边距
+//                
+//                btn.frame = CGRect(x: kMargin , y: kMargin + (numberOfRow * (20 + kMargin)), width: stringSize.width, height: 20)
+//                
+//            }else {//当总宽度不大于屏幕宽度时
+//                
+//                btn.frame = CGRect(x: realWidth + kMargin + numberOfLine * kMargin, y: kMargin + (numberOfRow * (20 + kMargin)), width: stringSize.width, height: 20)
+//                
+//                realWidth += stringSize.width
+//                
+//                numberOfLine += 1 //当没有换行时，记录同行btn的个数，以便加kMargin
+//                
+//            }
             
         }
     }
